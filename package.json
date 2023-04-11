@@ -1,0 +1,34 @@
+{
+  "name": "hocuspocus-extension-elasticsearch",
+  "description": "a generic Hocuspocus persistence driver for the elasticsearch",
+  "version": "1.0.0",
+  "keywords": [
+    "hocuspocus",
+    "yjs"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/hocuspocus-elasticsearch.cjs",
+  "module": "dist/hocuspocus-elasticsearch.esm.js",
+  "types": "dist/packages/extension-elasticsearch/src/index.d.ts",
+  "exports": {
+    "source": {
+      "import": "./src"
+    },
+    "default": {
+      "import": "./dist/hocuspocus-elasticsearch.esm.js",
+      "require": "./dist/hocuspocus-elasticsearch.cjs"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "dependencies": {
+    "@elastic/elasticsearch": "^6.8.6",
+    "@hocuspocus/extension-database": "^2.0.1",
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
