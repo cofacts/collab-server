@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "esnext",
+    "strict": false,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "allowJs": false,
+    "checkJs": false,
+    "paths": {
+      "@nonumpa/hocuspocus-extension-elasticsearch": [
+        "hocuspocus-extension-elasticsearch/src",
+        "hocuspocus-extension-elasticsearch/dist"
+      ],
+    },
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "skipLibCheck": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "**/dist"
+  ]
+}
