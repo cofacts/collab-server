@@ -1,10 +1,15 @@
 import { Database, DatabaseConfiguration } from '@hocuspocus/extension-database'
 import elasticsearch from '@elastic/elasticsearch'
 
+export interface ElasticsearchConfiguration extends DatabaseConfiguration {
+  
+  elasticsearchOpts?: elasticsearch.ClientOptions
+}
+
 export class Elasticsearch extends Database {
   db?: elasticsearch.Client
 
-  configuration: DatabaseConfiguration = {
+  configuration: ElasticsearchConfiguration = {
     fetch: async ({ documentName }) => {
       console.log('DB fetch')
       const { body: docExist } = await this.db?.exists({ index: 'ydocs', id: documentName, type: 'doc' }) || {}
@@ -35,7 +40,7 @@ export class Elasticsearch extends Database {
     },
   }
 
-  constructor(configuration?: Partial<DatabaseConfiguration>) {
+  constructor(configuration?: Partial<ElasticsearchConfiguration>) {
     super({})
 
     this.configuration = {
@@ -45,9 +50,7 @@ export class Elasticsearch extends Database {
   }
 
   async onConfigure() {
-    this.db = new elasticsearch.Client({
-      node: 'http://localhost:62222',
-    })
+    this.db = new elasticsearch.Client(this.configuration.elasticsearchOpts)
   }
 
   async onListen() {

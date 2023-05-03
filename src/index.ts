@@ -8,7 +8,7 @@ const server = Server.configure({
   name: 'hocuspocus-fra1-01',
   extensions: [
     new Logger(),
-    new Elasticsearch(),
+    new Elasticsearch( { elasticsearchOpts: { node: process.env.ELASTICSEARCH_URL }}),
   ],
 })
 
