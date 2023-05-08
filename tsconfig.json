@@ -16,9 +16,9 @@
     "allowJs": false,
     "checkJs": false,
     "paths": {
-      "@nonumpa/hocuspocus-extension-elasticsearch": [
-        "hocuspocus-extension-elasticsearch/src",
-        "hocuspocus-extension-elasticsearch/dist"
+      "@cofacts/*": [
+        "*/src",
+        "*/dist"
       ],
     },
     "lib": [
@@ -31,7 +31,6 @@
     "**/*.ts"
   ],
   "exclude": [
-    "node_modules",
     "**/node_modules",
     "**/dist"
   ]

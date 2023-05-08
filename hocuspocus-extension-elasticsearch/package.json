@@ -1,23 +1,26 @@
 {
-  "name": "@nonumpa/hocuspocus-extension-elasticsearch",
+  "name": "@cofacts/hocuspocus-extension-elasticsearch",
   "description": "a generic Hocuspocus persistence driver for the elasticsearch",
   "version": "1.0.0",
+  "scripts": {
+    "build": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json"
+  },
   "keywords": [
     "hocuspocus",
     "yjs"
   ],
   "license": "MIT",
   "type": "module",
-  "main": "dist/hocuspocus-elasticsearch.cjs",
-  "module": "dist/hocuspocus-elasticsearch.esm.js",
-  "types": "dist/packages/extension-elasticsearch/src/index.d.ts",
+  "main": "dist/cjs/src/elasticsearch.js",
+  "module": "dist/esm/src/elasticsearch.js",
+  "types": "dist/types/src/index.d.ts",
   "exports": {
     "hocuspocus_extension_src": {
       "import": "./src"
     },
     "default": {
-      "import": "./dist/hocuspocus-elasticsearch.esm.js",
-      "require": "./dist/hocuspocus-elasticsearch.cjs"
+      "import": "./dist/esm/src/elasticsearch.js",
+      "require": "./dist/cjs/src/elasticsearch.js"
     }
   },
   "files": [
@@ -27,6 +30,9 @@
   "dependencies": {
     "@elastic/elasticsearch": "^6.8.6",
     "@hocuspocus/extension-database": "^2.0.1"
+  },
+  "devDependencies": {
+    "tslib": "^2.5.0"
   },
   "publishConfig": {
     "access": "public"

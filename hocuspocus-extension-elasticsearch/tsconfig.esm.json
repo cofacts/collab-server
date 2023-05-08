@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/esm",
+    "module": "esnext",
+    "baseUrl": ".", // override parent baseUrl to current folder
+    "rootDir": ".", // override parent rootDir to current folder
+  },
+  "include": [
+    "src/*.ts" // override parent include to current folder
+  ],
+}
