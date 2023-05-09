@@ -1,15 +1,16 @@
-import { Server } from '@hocuspocus/server'
-import { Logger } from '@hocuspocus/extension-logger'
-import { Elasticsearch } from '@nonumpa/hocuspocus-extension-elasticsearch'
+import { Server } from '@hocuspocus/server';
+import { Logger } from '@hocuspocus/extension-logger';
+import { Elasticsearch } from '@cofacts/hocuspocus-extension-elasticsearch';
+import 'dotenv/config';
 
 const server = Server.configure({
-  port: 1234,
-  address: '127.0.0.1',
-  name: 'hocuspocus-fra1-01',
+  port: process.env.PORT ? Number(process.env.PORT) : 1234,
   extensions: [
     new Logger(),
-    new Elasticsearch( { elasticsearchOpts: { node: process.env.ELASTICSEARCH_URL }}),
+    new Elasticsearch({
+      elasticsearchOpts: { node: process.env.ELASTICSEARCH_URL },
+    }),
   ],
-})
+});
 
-server.listen()
+server.listen();
