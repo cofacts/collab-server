@@ -15,6 +15,7 @@
     "rootDir": ".",
     "allowJs": false,
     "checkJs": false,
+    "outDir": "./dist",
     "paths": {
       "@cofacts/*": [
         "*/src",
