@@ -1,5 +1,5 @@
-# hocuspocus-server
-A @hocuspocus/server application that serves as a collaboration backend.
+# collab-server
+A [hocuspocus](https://github.com/ueberdosis/hocuspocus) application that serves as a collaboration backend.
 
 ## Development
 ### Environment variables
@@ -18,5 +18,5 @@ npm run dev
 ## Deploy
 ### build docker image
 ```
-docker build -t hocuspocus-server .
+docker build -t collab-server .
 ```

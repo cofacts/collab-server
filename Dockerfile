@@ -1,6 +1,6 @@
-# Builds production image for hocuspocus-server.
+# Builds production image for collab-server.
 
-# Stage1: Build hocuspocus-server
+# Stage1: Build collab-server
 #
 FROM node:18-alpine AS builder
 WORKDIR /srv/www
