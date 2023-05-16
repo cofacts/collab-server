@@ -9,6 +9,8 @@ WORKDIR /srv/www
 # Src: https://nodesource.com/blog/8-protips-to-start-killing-it-when-dockerizing-node-js/
 #
 COPY package.json package-lock.json ./
+COPY hocuspocus-extension-elasticsearch/package.json ./hocuspocus-extension-elasticsearch/package.json
+
 RUN npm install
 
 # Other files, so that other files do not interfere with node_modules cache
