@@ -34,7 +34,7 @@ COPY --from=builder /srv/www/dist ./dist
 #
 COPY --from=builder /srv/www/hocuspocus-extension-elasticsearch/dist ./hocuspocus-extension-elasticsearch/dist
 
-COPY package.json package-lock.json .env ./
+COPY package.json package-lock.json ./
 
 # copy monorepo's package.json
 # ref: https://github.com/lerna/lerna/issues/2381
