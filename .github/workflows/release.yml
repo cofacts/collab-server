@@ -46,7 +46,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: nonumpa/collab-server:${{ env.RELEASE_TAG }}
+          tags: cofacts/collab-server:${{ env.RELEASE_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
