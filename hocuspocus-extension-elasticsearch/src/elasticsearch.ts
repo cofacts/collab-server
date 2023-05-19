@@ -22,7 +22,7 @@ export class Elasticsearch extends Database {
           type: 'doc',
         })) || {};
       if (!docExist) {
-        return '';
+        return null;
       }
       const {
         body: {
@@ -38,7 +38,7 @@ export class Elasticsearch extends Database {
         })) || {};
       // console.log(JSON.stringify(body))
 
-      return data;
+      return Buffer.from(data);
     },
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
