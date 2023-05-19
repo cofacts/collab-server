@@ -6,18 +6,19 @@ import elasticsearch from '@elastic/elasticsearch';
 
 export interface ElasticsearchConfiguration extends DatabaseConfiguration {
   elasticsearchOpts?: elasticsearch.ClientOptions;
+  db_index?: string;
 }
 
 export class Elasticsearch extends Database {
   db?: elasticsearch.Client;
+  db_index: string;
 
   configuration: ElasticsearchConfiguration = {
-    elasticsearchOpts: { node: 'http://localhost:62222' },
     fetch: async ({ documentName }) => {
-      console.log('DB fetch');
+      // console.log(`DB fetch ${documentName}`);
       const { body: docExist } =
         (await this.db?.exists({
-          index: 'ydocs',
+          index: this.db_index,
           id: documentName,
           type: 'doc',
         })) || {};
@@ -32,7 +33,7 @@ export class Elasticsearch extends Database {
         },
       } =
         (await this.db?.get({
-          index: 'ydocs',
+          index: this.db_index,
           id: documentName,
           type: 'doc',
         })) || {};
@@ -42,8 +43,8 @@ export class Elasticsearch extends Database {
     },
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
-      const result = await this.db?.update({
-        index: 'ydocs',
+      await this.db?.update({
+        index: this.db_index,
         type: 'doc',
         id: documentName,
         body: {
@@ -55,7 +56,6 @@ export class Elasticsearch extends Database {
           },
         },
       });
-      console.log(`DB store result\n${JSON.stringify(result)}`);
     },
   };
 
@@ -68,6 +68,11 @@ export class Elasticsearch extends Database {
   }
 
   async onConfigure() {
-    this.db = new elasticsearch.Client(this.configuration.elasticsearchOpts);
+    const elasticsearchOpts = this.configuration.elasticsearchOpts || {
+      node: 'http://localhost:62222',
+    };
+    this.db = new elasticsearch.Client(elasticsearchOpts);
+
+    this.db_index = this.configuration.db_index || 'ydoc';
   }
 }
