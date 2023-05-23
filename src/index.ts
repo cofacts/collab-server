@@ -11,6 +11,17 @@ const server = Server.configure({
       elasticsearchOpts: { node: process.env.ELASTICSEARCH_URL },
     }),
   ],
+  async onAuthenticate(data) {
+    if (process.env.SECRET) {
+      // console.log('onAuthenticate ' + data.token);
+      const secrets = process.env.SECRET.split(' ');
+      if (!secrets.includes(data.token)) {
+        throw new Error('Incorrect access token');
+        // data.connection.readOnly = true;
+      }
+    }
+    return true;
+  },
 });
 
 server.listen();
