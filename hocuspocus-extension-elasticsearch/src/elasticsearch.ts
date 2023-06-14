@@ -19,9 +19,7 @@ export class Elasticsearch extends Database {
       try {
         const {
           body: {
-            _source: {
-              ydoc: { data },
-            },
+            _source: { ydoc: data },
           },
         } =
           (await this.db?.get({
@@ -30,7 +28,7 @@ export class Elasticsearch extends Database {
             type: 'doc',
           })) || {};
 
-        return Buffer.from(data);
+        return Buffer.from(data, 'base64');
       } catch (e) {
         // console.log(JSON.stringify(e));
         if (e.meta.statusCode !== 404) {
@@ -47,10 +45,12 @@ export class Elasticsearch extends Database {
         id: documentName,
         body: {
           doc: {
-            ydoc: state,
+            // elasticsearch stores binary as a Base64 encoded string
+            // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
+            ydoc: state.toString('base64'),
           },
           upsert: {
-            ydoc: state,
+            ydoc: state.toString('base64'),
           },
         },
       });
