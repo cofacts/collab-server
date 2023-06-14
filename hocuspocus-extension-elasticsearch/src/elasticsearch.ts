@@ -6,12 +6,12 @@ import elasticsearch from '@elastic/elasticsearch';
 
 export interface ElasticsearchConfiguration extends DatabaseConfiguration {
   elasticsearchOpts?: elasticsearch.ClientOptions;
-  db_index?: string;
+  dbIndex?: string;
 }
 
 export class Elasticsearch extends Database {
   db?: elasticsearch.Client;
-  db_index: string;
+  dbIndex: string;
 
   configuration: ElasticsearchConfiguration = {
     fetch: async ({ documentName }) => {
@@ -44,7 +44,7 @@ export class Elasticsearch extends Database {
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
       await this.db?.update({
-        index: this.db_index,
+        index: this.dbIndex,
         type: 'doc',
         id: documentName,
         body: {
@@ -73,6 +73,6 @@ export class Elasticsearch extends Database {
     };
     this.db = new elasticsearch.Client(elasticsearchOpts);
 
-    this.db_index = this.configuration.db_index || 'ydoc';
+    this.dbIndex = this.configuration.dbIndex || 'ydocs';
   }
 }
