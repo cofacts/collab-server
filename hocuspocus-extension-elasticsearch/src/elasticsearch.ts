@@ -2,7 +2,11 @@ import {
   Database,
   DatabaseConfiguration,
 } from '@hocuspocus/extension-database';
+import { Document } from '@hocuspocus/server';
 import elasticsearch from '@elastic/elasticsearch';
+import { yDocToProsemirrorJSON } from 'y-prosemirror';
+import { Node } from 'prosemirror-model';
+import { schema } from './schema';
 
 export interface ElasticsearchConfiguration extends DatabaseConfiguration {
   elasticsearchOpts?: elasticsearch.ClientOptions;
@@ -37,7 +41,7 @@ export class Elasticsearch extends Database {
         return null;
       }
     },
-    store: async ({ documentName, state }) => {
+    store: async ({ documentName, state, document }) => {
       // console.log(`DB store ${state}`)
       await this.db?.update({
         index: this.dbIndex,
@@ -51,6 +55,24 @@ export class Elasticsearch extends Database {
           },
           upsert: {
             ydoc: state.toString('base64'),
+          },
+        },
+      });
+
+      // console.log(document.getXmlFragment('prosemirror').toJSON());
+      // output: `<paragraph>First line</paragraph><paragraph>Second line</paragraph>`
+      // We should parse it to plaintext
+      const text = this.docToPlainText(document);
+
+      const now = new Date().toISOString();
+      await this.db?.update({
+        index: 'articles',
+        type: 'doc',
+        id: documentName,
+        body: {
+          doc: {
+            text,
+            updatedAt: now,
           },
         },
       });
@@ -72,5 +94,23 @@ export class Elasticsearch extends Database {
     this.db = new elasticsearch.Client(elasticsearchOpts);
 
     this.dbIndex = this.configuration.dbIndex || 'ydocs';
+  }
+
+  private docToPlainText(document: Document) {
+    // get prosemirror json
+    const json = yDocToProsemirrorJSON(document);
+    // get prosemirror doc
+    const doc = Node.fromJSON(schema, json);
+    // get plaintext
+    let text = '';
+    doc.content.forEach((node, offset, index) => {
+      // console.log(node.textContent);
+      // console.log(node.type.name);
+      if (node.textContent) {
+        text += node.textContent;
+      }
+      text += '\n';
+    });
+    return text;
   }
 }
