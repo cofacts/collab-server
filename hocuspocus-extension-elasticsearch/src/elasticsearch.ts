@@ -16,30 +16,28 @@ export class Elasticsearch extends Database {
   configuration: ElasticsearchConfiguration = {
     fetch: async ({ documentName }) => {
       // console.log(`DB fetch ${documentName}`);
-      const { body: docExist } =
-        (await this.db?.exists({
-          index: this.db_index,
-          id: documentName,
-          type: 'doc',
-        })) || {};
-      if (!docExist) {
+      try {
+        const {
+          body: {
+            _source: {
+              ydoc: { data },
+            },
+          },
+        } =
+          (await this.db?.get({
+            index: this.dbIndex,
+            id: documentName,
+            type: 'doc',
+          })) || {};
+
+        return Buffer.from(data);
+      } catch (e) {
+        // console.log(JSON.stringify(e));
+        if (e.meta.statusCode !== 404) {
+          console.error(e);
+        }
         return null;
       }
-      const {
-        body: {
-          _source: {
-            ydoc: { data },
-          },
-        },
-      } =
-        (await this.db?.get({
-          index: this.db_index,
-          id: documentName,
-          type: 'doc',
-        })) || {};
-      // console.log(JSON.stringify(body))
-
-      return Buffer.from(data);
     },
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
