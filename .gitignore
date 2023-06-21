@@ -9,15 +9,10 @@ dist
 
 # Dependency directories
 node_modules
-jspm_packages
 
 # Optional npm cache directory
 .npm
 
-# docker-compose test data
-esdata
-
 # local config
-config/local-*
 .vscode/
 .env

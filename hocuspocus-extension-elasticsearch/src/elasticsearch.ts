@@ -1,25 +1,48 @@
-import { Database, DatabaseConfiguration } from '@hocuspocus/extension-database'
-import elasticsearch from '@elastic/elasticsearch'
+import {
+  Database,
+  DatabaseConfiguration,
+} from '@hocuspocus/extension-database';
+import elasticsearch from '@elastic/elasticsearch';
+
+export interface ElasticsearchConfiguration extends DatabaseConfiguration {
+  elasticsearchOpts?: elasticsearch.ClientOptions;
+  dbIndex?: string;
+}
 
 export class Elasticsearch extends Database {
-  db?: elasticsearch.Client
+  db?: elasticsearch.Client;
+  dbIndex: string;
 
-  configuration: DatabaseConfiguration = {
+  configuration: ElasticsearchConfiguration = {
     fetch: async ({ documentName }) => {
-      console.log('DB fetch')
-      const { body: docExist } = await this.db?.exists({ index: 'ydocs', id: documentName, type: 'doc' }) || {}
-      if (!docExist) {
-        return ''
-      }
-      const { body: { _source: { ydoc: { data } } } } = (await this.db?.get({ index: 'ydocs', id: documentName, type: 'doc' })) || {}
-      // console.log(JSON.stringify(body))
+      // console.log(`DB fetch ${documentName}`);
+      try {
+        const {
+          body: {
+            _source: {
+              ydoc: { data },
+            },
+          },
+        } =
+          (await this.db?.get({
+            index: this.dbIndex,
+            id: documentName,
+            type: 'doc',
+          })) || {};
 
-      return data
+        return Buffer.from(data);
+      } catch (e) {
+        // console.log(JSON.stringify(e));
+        if (e.meta.statusCode !== 404) {
+          console.error(e);
+        }
+        return null;
+      }
     },
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
-      const result = await this.db?.update({
-        index: 'ydocs',
+      await this.db?.update({
+        index: this.dbIndex,
         type: 'doc',
         id: documentName,
         body: {
@@ -30,26 +53,24 @@ export class Elasticsearch extends Database {
             ydoc: state,
           },
         },
-      })
-      console.log(`DB store result\n${JSON.stringify(result)}`)
+      });
     },
-  }
+  };
 
-  constructor(configuration?: Partial<DatabaseConfiguration>) {
-    super({})
-
+  constructor(configuration?: Partial<ElasticsearchConfiguration>) {
+    super({});
     this.configuration = {
       ...this.configuration,
       ...configuration,
-    }
+    };
   }
 
   async onConfigure() {
-    this.db = new elasticsearch.Client({
+    const elasticsearchOpts = this.configuration.elasticsearchOpts || {
       node: 'http://localhost:62222',
-    })
-  }
+    };
+    this.db = new elasticsearch.Client(elasticsearchOpts);
 
-  async onListen() {
+    this.dbIndex = this.configuration.dbIndex || 'ydocs';
   }
 }
