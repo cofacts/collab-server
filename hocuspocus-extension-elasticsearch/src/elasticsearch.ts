@@ -6,7 +6,7 @@ import { Document } from '@hocuspocus/server';
 import elasticsearch from '@elastic/elasticsearch';
 import { yDocToProsemirrorJSON } from 'y-prosemirror';
 import { Node } from 'prosemirror-model';
-import { schema } from './schema';
+import { schema } from 'prosemirror-schema-basic';
 
 export interface ElasticsearchConfiguration extends DatabaseConfiguration {
   elasticsearchOpts?: elasticsearch.ClientOptions;
