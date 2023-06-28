@@ -43,34 +43,38 @@ export class Elasticsearch extends Database {
     },
     store: async ({ documentName, state, document }) => {
       // console.log(`DB store ${state}`)
-      await this.db?.index({
-        index: this.dbIndex,
-        type: 'doc',
-        id: documentName,
-        body: {
-          // elasticsearch stores binary as a Base64 encoded string
-          // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
-          ydoc: state.toString('base64'),
-        },
-      });
-
-      // console.log(document.getXmlFragment('prosemirror').toJSON());
-      // output: `<paragraph>First line</paragraph><paragraph>Second line</paragraph>`
-      // We should parse it to plaintext
-      const text = this.docToPlainText(document);
-
-      const now = new Date().toISOString();
-      await this.db?.update({
-        index: 'articles',
-        type: 'doc',
-        id: documentName,
-        body: {
-          doc: {
-            text,
-            updatedAt: now,
+      try {
+        await this.db?.index({
+          index: this.dbIndex,
+          type: 'doc',
+          id: documentName,
+          body: {
+            // elasticsearch stores binary as a Base64 encoded string
+            // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
+            ydoc: state.toString('base64'),
           },
-        },
-      });
+        });
+
+        // console.log(document.getXmlFragment('prosemirror').toJSON());
+        // output: `<paragraph>First line</paragraph><paragraph>Second line</paragraph>`
+        // We should parse it to plaintext
+        const text = this.docToPlainText(document);
+
+        const now = new Date().toISOString();
+        await this.db?.update({
+          index: 'articles',
+          type: 'doc',
+          id: documentName,
+          body: {
+            doc: {
+              text,
+              updatedAt: now,
+            },
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
     },
   };
 
