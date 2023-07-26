@@ -4,6 +4,7 @@ import { Elasticsearch } from '@cofacts/hocuspocus-extension-elasticsearch';
 import 'dotenv/config';
 
 const server = Server.configure({
+  yDocOptions: { gc: false, gcFilter: () => true },
   port: process.env.PORT ? Number(process.env.PORT) : 1234,
   extensions: [
     new Logger(),
