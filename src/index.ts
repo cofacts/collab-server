@@ -1,7 +1,12 @@
-import { Server, Document, onStoreDocumentPayload } from '@hocuspocus/server';
+import {
+  Server,
+  Document,
+  onStoreDocumentPayload,
+  afterLoadDocumentPayload,
+} from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 import { Elasticsearch } from '@cofacts/hocuspocus-extension-elasticsearch';
-import { Snapshot } from './snapshot';
+import { Snapshot, addVersion } from './snapshot';
 import { yDocToProsemirrorJSON } from 'y-prosemirror';
 import { Node } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
@@ -10,6 +15,17 @@ import 'dotenv/config';
 
 const elasticsearchOpts: elasticsearch.ClientOptions = {
   node: process.env.ELASTICSEARCH_URL,
+};
+
+const afterLoadDocument = async ({ document }: afterLoadDocumentPayload) => {
+  // migration script, for those article had transcript already but didn't have version snapshots
+  if (
+    document.getArray('versions').length === 0 &&
+    document.getXmlFragment('prosemirror').toJSON()
+  ) {
+    console.log('Snapshot doc: ', document.name);
+    addVersion(document);
+  }
 };
 
 const storeArticleText = async (data: onStoreDocumentPayload) => {
@@ -61,6 +77,7 @@ const docToPlainText = (document: Document) => {
 const server = Server.configure({
   yDocOptions: { gc: false, gcFilter: () => true },
   port: process.env.PORT ? Number(process.env.PORT) : 1234,
+  afterLoadDocument,
   onStoreDocument: storeArticleText,
   extensions: [
     new Logger(),
