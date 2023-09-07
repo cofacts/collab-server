@@ -35,11 +35,7 @@ const storeArticleText = async (data: onStoreDocumentPayload) => {
     // We should parse it to plaintext
     const text = docToPlainText(data.document);
 
-    const db = new elasticsearch.Client(
-      elasticsearchOpts || {
-        node: 'http://localhost:62222',
-      }
-    );
+    const db = new elasticsearch.Client(elasticsearchOpts);
     await db?.update({
       index: 'articles',
       type: 'doc',
