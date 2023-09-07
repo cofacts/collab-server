@@ -18,6 +18,7 @@
   "author": "Cofacts message reporting chatbot and crowd-sourced fact-checking community (「Cofacts 真的假的」訊息回報機器人與查證協作社群)",
   "license": "MIT",
   "dependencies": {
+    "@elastic/elasticsearch": "^6.8.6",
     "@hocuspocus/extension-logger": "^2.0.1",
     "@hocuspocus/server": "^2.0.1",
     "@types/node": "^16.11.11",
