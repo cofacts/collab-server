@@ -40,14 +40,19 @@ export class Elasticsearch extends Database {
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
       try {
-        await this.db?.index({
+        await this.db?.update({
           index: this.dbIndex,
           type: 'doc',
           id: documentName,
           body: {
-            // elasticsearch stores binary as a Base64 encoded string
-            // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
-            ydoc: state.toString('base64'),
+            doc: {
+              // elasticsearch stores binary as a Base64 encoded string
+              // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
+              ydoc: state.toString('base64'),
+            },
+            upsert: {
+              ydoc: state.toString('base64'),
+            },
           },
         });
       } catch (e) {
