@@ -32,7 +32,7 @@ export class Elasticsearch extends Database {
       } catch (e) {
         // console.log(JSON.stringify(e));
         if (e.meta.statusCode !== 404) {
-          console.error(e);
+          console.error('[db]', e);
         }
         return null;
       }
@@ -56,7 +56,7 @@ export class Elasticsearch extends Database {
           },
         });
       } catch (e) {
-        console.error(e);
+        console.error('[db]', e);
       }
     },
   };

@@ -68,9 +68,9 @@ export const getVersion = async (
     return result.body?.versions || [];
   } catch (e) {
     if (!e.meta) {
-      console.error(e);
+      console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
-      console.error(JSON.stringify(e));
+      console.error('[snapshot]', JSON.stringify(e));
     }
     return [];
   }
@@ -112,9 +112,9 @@ export const pushVersion = async (
     });
   } catch (e) {
     if (!e.meta) {
-      console.error(e);
+      console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
-      console.error(JSON.stringify(e));
+      console.error('[snapshot]', JSON.stringify(e));
     }
   }
 };
