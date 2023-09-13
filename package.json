@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node --conditions=hocuspocus_extension_src --no-warnings --loader ts-node/esm --experimental-specifier-resolution=node",
     "dev": "nodemon --inspect -e ts --watch ./src --watch ./hocuspocus-extension-elasticsearch --exec npm start src/index.ts",
-    "prod": "node dist/src/index.js",
+    "prod": "node --experimental-specifier-resolution=node dist/src/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "build:extension-es": "npm run build -w hocuspocus-extension-elasticsearch",
