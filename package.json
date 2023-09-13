@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node --conditions=hocuspocus_extension_src --no-warnings --loader ts-node/esm --experimental-specifier-resolution=node",
     "dev": "nodemon --inspect -e ts --watch ./src --watch ./hocuspocus-extension-elasticsearch --exec npm start src/index.ts",
-    "prod": "node dist/src/index.js",
+    "prod": "node --experimental-specifier-resolution=node dist/src/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "build:extension-es": "npm run build -w hocuspocus-extension-elasticsearch",
@@ -18,6 +18,7 @@
   "author": "Cofacts message reporting chatbot and crowd-sourced fact-checking community (「Cofacts 真的假的」訊息回報機器人與查證協作社群)",
   "license": "MIT",
   "dependencies": {
+    "@elastic/elasticsearch": "^6.8.6",
     "@hocuspocus/extension-logger": "^2.0.1",
     "@hocuspocus/server": "^2.0.1",
     "@types/node": "^16.11.11",
