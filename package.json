@@ -14,7 +14,11 @@
     "lint:fix": "eslint --fix .",
     "build:extension-es": "npm run build -w hocuspocus-extension-elasticsearch",
     "build": "npm run build --workspaces --if-present && tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pretest": "npm run rumors-db:install && npm run rumors-db:test && mkdir -p build",
+    "test": "NODE_ENV=test ELASTICSEARCH_URL=http://localhost:62223 jest --runInBand --detectOpenHandles --forceExit",
+    "rumors-db:pull": "cd test/rumors-db && git pull",
+    "rumors-db:test": "cd test/rumors-db && ELASTICSEARCH_URL=http://localhost:62223 npm t",
+    "rumors-db:install": "cd test/rumors-db && npm i"
   },
   "author": "Cofacts message reporting chatbot and crowd-sourced fact-checking community (「Cofacts 真的假的」訊息回報機器人與查證協作社群)",
   "license": "MIT",
