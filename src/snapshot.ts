@@ -21,7 +21,9 @@ const db = new elasticsearch.Client(elasticsearchOpts);
  * @param {Document} doc
  */
 export const addVersion = async (doc: Document) => {
-  const versions: { createdAt: string; snapshot: string }[] = await getVersion(doc);
+  const versions: { createdAt: string; snapshot: string }[] = await getVersion(
+    doc
+  );
   console.log(versions);
   const prevVersion: {
     createdAt: string;
