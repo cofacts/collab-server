@@ -2,7 +2,8 @@
   "name": "collab-server",
   "version": "1.0.0",
   "workspaces": [
-    "hocuspocus-extension-elasticsearch"
+    "hocuspocus-extension-elasticsearch",
+    "test"
   ],
   "type": "module",
   "scripts": {
