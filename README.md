@@ -1,6 +1,6 @@
 # collab-server
 
-[![CI test](https://github.com/cofacts/collab-server/actions/workflows/ci.yml/badge.svg)](https://github.com/cofacts/collab-server/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/cofacts/collab-server/badge.svg?branch=test)](https://coveralls.io/github/cofacts/collab-server?branch=test)
+[![CI test](https://github.com/cofacts/collab-server/actions/workflows/ci.yml/badge.svg)](https://github.com/cofacts/collab-server/actions/workflows/ci.yml) [![Coverage Status](https://coveralls.io/repos/github/cofacts/collab-server/badge.svg)](https://coveralls.io/github/cofacts/collab-server)
 
 A [hocuspocus](https://github.com/ueberdosis/hocuspocus) application that serves as a collaboration backend.
 
