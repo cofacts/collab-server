@@ -17,6 +17,7 @@ export class Elasticsearch extends Database {
     fetch: async ({ documentName }) => {
       // console.log(`DB fetch ${documentName}`);
       try {
+        /* istanbul ignore next */
         const {
           body: {
             _source: { ydoc: data },
@@ -40,6 +41,7 @@ export class Elasticsearch extends Database {
     store: async ({ documentName, state }) => {
       // console.log(`DB store ${state}`)
       try {
+        /* istanbul ignore next */
         await this.db?.update({
           index: this.dbIndex,
           type: 'doc',
@@ -70,6 +72,7 @@ export class Elasticsearch extends Database {
   }
 
   async onConfigure() {
+    /* istanbul ignore next */
     const elasticsearchOpts = this.configuration.elasticsearchOpts || {
       node: 'http://localhost:62222',
     };

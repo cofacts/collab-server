@@ -64,6 +64,7 @@ describe('elasticsearch extension', () => {
   });
 
   it('logs error', (resolve) => {
+    jest.spyOn(global.console, 'error');
     newHocuspocus({
       yDocOptions: { gc: false, gcFilter: () => true },
       port: 12345,
@@ -78,6 +79,7 @@ describe('elasticsearch extension', () => {
     }).then((server) => {
       newHocuspocusProvider(server, {
         onSynced() {
+          expect(console.error).toBeCalledTimes(1);
           server.destroy().then(resolve());
         },
       });
