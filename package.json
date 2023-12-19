@@ -14,7 +14,7 @@
     "lint:fix": "eslint --fix .",
     "build:extension-es": "npm run build -w hocuspocus-extension-elasticsearch",
     "build": "npm run build --workspaces --if-present && tsc -b",
-    "pretest": "npm run rumors-db:install && npm run rumors-db:test && mkdir -p build",
+    "pretest": "npm run rumors-db:install && npm run rumors-db:test",
     "test": "NODE_ENV=test ELASTICSEARCH_URL=http://localhost:62223 jest --runInBand --detectOpenHandles --forceExit",
     "rumors-db:pull": "cd test/rumors-db && git pull",
     "rumors-db:test": "cd test/rumors-db && ELASTICSEARCH_URL=http://localhost:62223 npm t",
