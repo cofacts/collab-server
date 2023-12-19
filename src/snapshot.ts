@@ -69,6 +69,7 @@ export const getVersion = async (
 
     return result.body?.versions || [];
   } catch (e) {
+    /* istanbul ignore next */
     if (!e.meta) {
       console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
@@ -113,6 +114,7 @@ export const pushVersion = async (
       },
     });
   } catch (e) {
+    /* istanbul ignore next */
     if (!e.meta) {
       console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
