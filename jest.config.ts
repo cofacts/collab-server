@@ -5,9 +5,12 @@ module.exports = {
   // modulePaths: [`<rootDir>/test/utils`],
   setupFilesAfterEnv: ['./test/setup.ts'],
   coveragePathIgnorePatterns: ['./test/'],
-  globals: {
-    'ts-jest': {
-      tsconfig: './tsconfig.json',
-    },
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: './tsconfig.json',
+      },
+    ],
   },
 };
