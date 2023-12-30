@@ -23,3 +23,17 @@ export const newHocuspocusProvider = (
     ...options,
   });
 };
+
+export const syncedNewHocuspocusProvider = (
+  server: Hocuspocus,
+  options: Partial<HocuspocusProviderConfiguration> = {},
+  websocketOptions: Partial<HocuspocusProviderWebsocketConfiguration> = {}
+): Promise<HocuspocusProvider> => {
+  return new Promise<HocuspocusProvider>((resolve) => {
+    const provider = newHocuspocusProvider(server, options, websocketOptions);
+    provider.on('synced', () => {
+      provider.off('synced');
+      resolve(provider);
+    });
+  });
+};

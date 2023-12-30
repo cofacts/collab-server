@@ -1,4 +1,8 @@
-import { newHocuspocus, newHocuspocusProvider, delayForMs } from 'test/utils';
+import {
+  newHocuspocus,
+  syncedNewHocuspocusProvider,
+  delayForMs,
+} from 'test/utils';
 import { Elasticsearch } from '../elasticsearch';
 import elasticsearch from '@elastic/elasticsearch';
 
@@ -7,7 +11,8 @@ describe('elasticsearch extension', () => {
     node: process.env.ELASTICSEARCH_URL,
   };
   afterEach(async () => {
-    // wait for server async function such as onStoreDocument finished
+    // server.destroy() does not resolve after cleanup functions such as onStoreDocument called
+    // thus we should wait for these functions finished
     await delayForMs(1000);
   });
 
@@ -21,16 +26,12 @@ describe('elasticsearch extension', () => {
         }),
       ],
     });
-    const provider = newHocuspocusProvider(server, {
-      onSynced() {
-        expect(provider.document.share.size).toBe(0);
-        provider.configuration.websocketProvider.disconnect();
-        provider.disconnect();
-      },
-    });
 
-    // wait for provider to connect(onSynced) and close
-    await delayForMs(1000);
+    const provider = await syncedNewHocuspocusProvider(server);
+    expect(provider.document.share.size).toBe(0);
+    provider.configuration.websocketProvider.disconnect();
+    provider.disconnect();
+
     await server.destroy();
   });
 
@@ -45,36 +46,23 @@ describe('elasticsearch extension', () => {
         }),
       ],
     });
-    const provider1 = newHocuspocusProvider(server, {
-      onSynced() {
-        const ydoc = provider1.document;
-        ydoc.getText(textName).insert(0, 'foo');
-        provider1.configuration.websocketProvider.disconnect();
-        provider1.disconnect();
-      },
-    });
+    const provider1 = await syncedNewHocuspocusProvider(server);
+    const ydoc = provider1.document;
+    ydoc.getText(textName).insert(0, 'foo');
+    provider1.configuration.websocketProvider.disconnect();
+    provider1.disconnect();
 
-    // wait for provider1 to connect(onSynced) and close
-    await delayForMs(1000);
+    const provider2 = await syncedNewHocuspocusProvider(server);
+    expect(provider2.document.getText(textName)).toMatchInlineSnapshot(`"foo"`);
+    provider2.configuration.websocketProvider.disconnect();
+    provider2.disconnect();
 
-    const provider2 = newHocuspocusProvider(server, {
-      onSynced() {
-        expect(provider2.document.getText(textName)).toMatchInlineSnapshot(
-          `"foo"`
-        );
-        provider2.configuration.websocketProvider.disconnect();
-        provider2.disconnect();
-      },
-    });
-
-    // wait for provider2 to connect(onSynced) and close
-    await delayForMs(1000);
     await server.destroy();
   });
 
-  it('logs error', (resolve) => {
+  it('logs error', async () => {
     jest.spyOn(global.console, 'error');
-    newHocuspocus({
+    const server = await newHocuspocus({
       yDocOptions: { gc: false, gcFilter: () => true },
       port: 1234,
 
@@ -85,13 +73,13 @@ describe('elasticsearch extension', () => {
           },
         }),
       ],
-    }).then((server) => {
-      newHocuspocusProvider(server, {
-        onSynced() {
-          expect(console.error).toBeCalledTimes(1);
-          server.destroy().then(resolve());
-        },
-      });
     });
+    const provider = await syncedNewHocuspocusProvider(server);
+    expect(console.error).toBeCalledTimes(1);
+    provider.configuration.websocketProvider.disconnect();
+    provider.disconnect();
+
+    // Note: console.error will be called again because onStoreDocument will be called as server cleanup
+    await server.destroy();
   });
 });

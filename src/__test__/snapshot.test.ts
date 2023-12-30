@@ -1,4 +1,8 @@
-import { newHocuspocus, newHocuspocusProvider, delayForMs } from 'test/utils';
+import {
+  newHocuspocus,
+  syncedNewHocuspocusProvider,
+  delayForMs,
+} from 'test/utils';
 import { Snapshot } from '../snapshot';
 import elasticsearch from '@elastic/elasticsearch';
 import Y from 'yjs';
@@ -7,6 +11,11 @@ describe('Snapshot extension', () => {
   const elasticsearchOpts: elasticsearch.ClientOptions = {
     node: process.env.ELASTICSEARCH_URL,
   };
+  afterEach(async () => {
+    // server.destroy() does not resolve after cleanup functions such as onStoreDocument called
+    // thus we should wait for these functions finished
+    await delayForMs(1000);
+  });
 
   it('store snapshot', async () => {
     const dbIndex = 'ydocs';
@@ -32,18 +41,17 @@ describe('Snapshot extension', () => {
     });
 
     // Note: newHocuspocusProvider's default is connected to 'hocuspocus-test'
-    const provider = newHocuspocusProvider(server, {
-      async onSynced() {
-        const ydoc = provider.document;
-        // mock prosemirror input
-        ydoc.getXmlFragment('prosemirror').insert(0, [new Y.XmlText('foo')]);
-        provider.configuration.websocketProvider.disconnect();
-        provider.disconnect();
-      },
-    });
+    const provider = await syncedNewHocuspocusProvider(server);
+    const ydoc = provider.document;
+    // mock prosemirror input
+    ydoc.getXmlFragment('prosemirror').insert(0, [new Y.XmlText('foo')]);
+    provider.configuration.websocketProvider.disconnect();
+    provider.disconnect();
 
-    // wait for provider to connect and close
+    // wait for Snapshot.addVersion which is called when provider disconnected
+    // server should destroy after Snapshot.addVersion finished
     await delayForMs(1000);
+
     await server.destroy();
     const result = await db?.getSource({
       index: dbIndex,
