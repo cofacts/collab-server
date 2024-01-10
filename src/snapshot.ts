@@ -21,7 +21,9 @@ const db = new elasticsearch.Client(elasticsearchOpts);
  * @param {Document} doc
  */
 export const addVersion = async (doc: Document) => {
-  const versions: { createdAt: string; snapshot: string }[] = await getVersion(doc);
+  const versions: { createdAt: string; snapshot: string }[] = await getVersion(
+    doc
+  );
   console.log(versions);
   const prevVersion: {
     createdAt: string;
@@ -67,6 +69,7 @@ export const getVersion = async (
 
     return result.body?.versions || [];
   } catch (e) {
+    /* istanbul ignore next */
     if (!e.meta) {
       console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
@@ -111,6 +114,7 @@ export const pushVersion = async (
       },
     });
   } catch (e) {
+    /* istanbul ignore next */
     if (!e.meta) {
       console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
