@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@hocuspocus/provider": "^2.7.1",
-    "@hocuspocus/server": "^2.7.1",
-    "@hocuspocus/transformer": "^2.7.1",
+    "@hocuspocus/provider": "^2.0.3",
+    "@hocuspocus/server": "^2.0.1",
+    "@hocuspocus/transformer": "^2.0.3",
     "node-fetch": "^3.2.3",
     "redis": "^4.0.4",
     "sinon": "^12.0.1",
