@@ -24,8 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "@elastic/elasticsearch": "^6.8.6",
-    "@hocuspocus/extension-logger": "^2.0.1",
-    "@hocuspocus/server": "^2.0.1",
+    "@hocuspocus/extension-logger": "^2.7.1",
+    "@hocuspocus/server": "^2.7.1",
     "@types/node": "^16.11.11",
     "dotenv": "^16.0.3",
     "yjs": "^13.5.29"
