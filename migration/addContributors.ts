@@ -108,6 +108,9 @@ export const getAllContributors = async (
   return [...contributors.values()];
 };
 
+/**
+ * Get all ydocs with a scroll size of 100
+ */
 const forEachYdoc = async (callback) => {
   let scroll_id,
     processedCount = 0,
@@ -210,14 +213,43 @@ const getUserId = async (user: string) => {
   return userId;
 };
 
+/**
+ * Fill contributors filed with empty array
+ */
+async function initContributors() {
+  await client
+    .updateByQuery({
+      index: 'articles',
+      type: 'doc',
+      body: {
+        script: {
+          lang: 'painless',
+          source: `
+            if (ctx._source.contributors === null) {
+              ctx._source.contributors = new ArrayList();
+            } else {
+              ctx.op = 'noop';
+            }
+          `,
+        },
+      },
+      refresh: true,
+      conflicts: 'proceed',
+    })
+    .then((resp) => console.log(resp))
+    .catch((e) => console.error(JSON.stringify(e, null, '  ')));
+}
+
 async function main() {
-  // list all ydocs
+  await initContributors();
+
+  // list all ydocs with a scroll size of 100 and batch update the contributors field
   await forEachYdoc(async (hits) => {
     const operations = [];
     await Promise.all(
       hits.map(async ({ _id: id, _source: { ydoc: data, versions } }) => {
         if (!id || !data || !versions) {
-          // maybe user click the transcribe button but did not save the transcript
+          // maybe the case is user click the transcribe button but did not save the transcript
           console.log('ydoc error: id, data or versions null: ', id);
           errorArticles.push(id);
           return;
