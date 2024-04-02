@@ -10,6 +10,7 @@ import 'dotenv/config';
 
 const elasticsearchOpts: elasticsearch.ClientOptions = {
   node: process.env.ELASTICSEARCH_URL,
+  requestTimeout: 30 * 60 * 1000, // 30 min
 };
 
 const client = new elasticsearch.Client(elasticsearchOpts);
