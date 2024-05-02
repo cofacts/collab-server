@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "@elastic/elasticsearch": "^6.8.6",
-    "@hocuspocus/extension-database": "^2.0.1",
+    "@hocuspocus/extension-database": "^2.7.1",
     "y-prosemirror": "^1.2.1",
     "prosemirror-schema-basic": "^1.2.2"
   },

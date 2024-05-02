@@ -2,6 +2,7 @@ import { Server, Document, onStoreDocumentPayload } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 import { Elasticsearch } from '@cofacts/hocuspocus-extension-elasticsearch';
 import { Snapshot } from './snapshot';
+import { Contributors } from './contributors';
 import { yDocToProsemirrorJSON } from 'y-prosemirror';
 import { Node } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
@@ -11,6 +12,7 @@ import 'dotenv/config';
 const elasticsearchOpts: elasticsearch.ClientOptions = {
   node: process.env.ELASTICSEARCH_URL,
 };
+const db = new elasticsearch.Client(elasticsearchOpts);
 
 const storeArticleText = async (data: onStoreDocumentPayload) => {
   try {
@@ -19,7 +21,6 @@ const storeArticleText = async (data: onStoreDocumentPayload) => {
     // We should parse it to plaintext
     const text = docToPlainText(data.document);
 
-    const db = new elasticsearch.Client(elasticsearchOpts);
     await db?.update({
       index: 'articles',
       type: 'doc',
@@ -62,6 +63,7 @@ const server = Server.configure({
     new Logger(),
     new Snapshot(),
     new Elasticsearch({ elasticsearchOpts }),
+    new Contributors(),
   ],
 });
 
