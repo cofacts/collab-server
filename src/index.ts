@@ -55,7 +55,7 @@ const docToPlainText = (document: Document) => {
   return text;
 };
 
-const server = Server.configure({
+const server = new Server({
   yDocOptions: { gc: false, gcFilter: () => true },
   port: process.env.PORT ? Number(process.env.PORT) : 1234,
   onStoreDocument: storeArticleText,
