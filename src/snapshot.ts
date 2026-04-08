@@ -1,6 +1,6 @@
 import { Extension, onDisconnectPayload, Document } from '@hocuspocus/server';
 import * as Y from 'yjs';
-import elasticsearch from '@elastic/elasticsearch';
+import { Client, type ClientOptions } from '@elastic/elasticsearch';
 import 'dotenv/config';
 
 export class Snapshot implements Extension {
@@ -9,11 +9,11 @@ export class Snapshot implements Extension {
   }
 }
 
-const elasticsearchOpts: elasticsearch.ClientOptions = {
+const elasticsearchOpts: ClientOptions = {
   node: process.env.ELASTICSEARCH_URL,
 };
 
-const db = new elasticsearch.Client(elasticsearchOpts);
+const db = new Client(elasticsearchOpts);
 
 /**
  * Add a snapshot for current doc
@@ -60,17 +60,18 @@ export const getVersion = async (
 ): Promise<{ createdAt: string; snapshot: string }[]> => {
   try {
     // const db = new elasticsearch.Client(elasticsearchOpts);
-    const result = await db?.getSource({
+    const result = await db?.get<{
+      versions?: { createdAt: string; snapshot: string }[];
+    }>({
       index: 'ydocs',
       id: doc.name,
-      type: 'doc',
       _source_includes: ['versions'],
     });
 
-    return result.body?.versions || [];
+    return result?._source?.versions || [];
   } catch (e) {
     /* istanbul ignore next */
-    if (!e.meta) {
+    if (!e?.meta) {
       console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
       console.error('[snapshot]', JSON.stringify(e));
@@ -93,29 +94,26 @@ export const pushVersion = async (
     };
     await db.update({
       index: 'ydocs',
-      type: 'doc',
       id: docName,
-      body: {
-        script: {
-          source: `
-              if(ctx._source.versions == null) {
-                ctx._source.versions = [];
-              }
-              ctx._source.versions.add(params.version);
-            `,
-          params: {
-            // elasticsearch stores binary as a Base64 encoded string
-            // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
-            version,
-          },
-          lang: 'painless',
+      script: {
+        source: `
+            if(ctx._source.versions == null) {
+              ctx._source.versions = [];
+            }
+            ctx._source.versions.add(params.version);
+          `,
+        params: {
+          // elasticsearch stores binary as a Base64 encoded string
+          // https://www.elastic.co/guide/en/elasticsearch/reference/current/binary.html
+          version,
         },
-        refresh: true,
+        lang: 'painless',
       },
+      refresh: true,
     });
   } catch (e) {
     /* istanbul ignore next */
-    if (!e.meta) {
+    if (!e?.meta) {
       console.error('[snapshot]', e);
     } else if (e.meta.statusCode !== 404) {
       console.error('[snapshot]', JSON.stringify(e));
