@@ -1,8 +1,8 @@
 import { Server, Document, onStoreDocumentPayload } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 import { Elasticsearch } from '@cofacts/hocuspocus-extension-elasticsearch';
-import { Snapshot } from './snapshot';
-import { Contributors } from './contributors';
+import { Snapshot } from './snapshot.js';
+import { Contributors } from './contributors.js';
 import { yDocToProsemirrorJSON } from 'y-prosemirror';
 import { Node } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';

@@ -1,5 +1,5 @@
 import { Extension, Document, onDisconnectPayload } from '@hocuspocus/server';
-import { getVersion, equalSnapshots } from './snapshot';
+import { getVersion, equalSnapshots } from './snapshot.js';
 import { Client, type ClientOptions } from '@elastic/elasticsearch';
 import 'dotenv/config';
 
