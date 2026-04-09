@@ -4,11 +4,11 @@ import {
   delayForMs,
 } from 'test/utils';
 import { Snapshot } from '../snapshot';
-import elasticsearch from '@elastic/elasticsearch';
+import { Client, type ClientOptions } from '@elastic/elasticsearch';
 import Y from 'yjs';
 
 describe('Snapshot extension', () => {
-  const elasticsearchOpts: elasticsearch.ClientOptions = {
+  const elasticsearchOpts: ClientOptions = {
     node: process.env.ELASTICSEARCH_URL,
   };
   afterEach(async () => {
@@ -20,23 +20,19 @@ describe('Snapshot extension', () => {
   it('store snapshot', async () => {
     const dbIndex = 'ydocs';
     const documentName = 'hocuspocus-test';
-    const db = new elasticsearch.Client(elasticsearchOpts);
+    const db = new Client(elasticsearchOpts);
 
     // create the ydoc for Snapshot extension to update
     await db?.index({
       index: dbIndex,
-      type: 'doc',
       id: documentName,
-      body: {
-        doc: {
-          ydoc: 'mockydoc',
-        },
+      document: {
+        ydoc: 'mockydoc',
       },
     });
-
     const server = await newHocuspocus({
       yDocOptions: { gc: false, gcFilter: () => true },
-      port: 1234,
+      port: 0,
       extensions: [new Snapshot()],
     });
 
@@ -53,15 +49,21 @@ describe('Snapshot extension', () => {
     await delayForMs(1000);
 
     await server.destroy();
-    const result = await db?.getSource({
+    const result = await db?.get<{
+      versions?: { createdAt: string; snapshot: string }[];
+    }>({
       index: dbIndex,
       id: documentName,
-      type: 'doc',
       _source_includes: ['versions'],
     });
 
     // snapshot binary is different every time, because ydoc has some random variable values such as clientId
     // we just check the snapshot size
-    expect(result.body.versions[0].snapshot.length).toMatchInlineSnapshot(`12`);
+    expect(result._source.versions[0].snapshot.length).toMatchInlineSnapshot(
+      `12`
+    );
+
+    // Clean up test document to avoid polluting other test suites
+    await db?.delete({ index: dbIndex, id: documentName });
   });
 });

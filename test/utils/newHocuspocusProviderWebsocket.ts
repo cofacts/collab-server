@@ -2,11 +2,11 @@ import {
   HocuspocusProviderWebsocket,
   HocuspocusProviderWebsocketConfiguration,
 } from '@hocuspocus/provider';
-import { Hocuspocus } from '@hocuspocus/server';
+import { Server } from '@hocuspocus/server';
 import WebSocket from 'ws';
 
 export const newHocuspocusProviderWebsocket = (
-  server: Hocuspocus,
+  server: Server,
   options: Partial<Omit<HocuspocusProviderWebsocketConfiguration, 'url'>> = {}
 ) => {
   return new HocuspocusProviderWebsocket({

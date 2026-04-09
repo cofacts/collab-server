@@ -1,18 +1,18 @@
 import { Server, Document, onStoreDocumentPayload } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 import { Elasticsearch } from '@cofacts/hocuspocus-extension-elasticsearch';
-import { Snapshot } from './snapshot';
-import { Contributors } from './contributors';
+import { Snapshot } from './snapshot.js';
+import { Contributors } from './contributors.js';
 import { yDocToProsemirrorJSON } from 'y-prosemirror';
 import { Node } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
-import elasticsearch from '@elastic/elasticsearch';
+import { Client, type ClientOptions } from '@elastic/elasticsearch';
 import 'dotenv/config';
 
-const elasticsearchOpts: elasticsearch.ClientOptions = {
+const elasticsearchOpts: ClientOptions = {
   node: process.env.ELASTICSEARCH_URL,
 };
-const db = new elasticsearch.Client(elasticsearchOpts);
+const db = new Client(elasticsearchOpts);
 
 const storeArticleText = async (data: onStoreDocumentPayload) => {
   try {
@@ -23,13 +23,10 @@ const storeArticleText = async (data: onStoreDocumentPayload) => {
 
     await db?.update({
       index: 'articles',
-      type: 'doc',
       id: data.documentName,
-      body: {
-        doc: {
-          text,
-          updatedAt: new Date().toISOString(),
-        },
+      doc: {
+        text,
+        updatedAt: new Date().toISOString(),
       },
     });
   } catch (e) {
@@ -55,7 +52,7 @@ const docToPlainText = (document: Document) => {
   return text;
 };
 
-const server = Server.configure({
+const server = new Server({
   yDocOptions: { gc: false, gcFilter: () => true },
   port: process.env.PORT ? Number(process.env.PORT) : 1234,
   onStoreDocument: storeArticleText,

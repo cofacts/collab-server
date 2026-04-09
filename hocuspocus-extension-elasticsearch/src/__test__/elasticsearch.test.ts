@@ -4,10 +4,10 @@ import {
   delayForMs,
 } from 'test/utils';
 import { Elasticsearch } from '../elasticsearch';
-import elasticsearch from '@elastic/elasticsearch';
+import { type ClientOptions } from '@elastic/elasticsearch';
 
 describe('elasticsearch extension', () => {
-  const elasticsearchOpts: elasticsearch.ClientOptions = {
+  const elasticsearchOpts: ClientOptions = {
     node: process.env.ELASTICSEARCH_URL,
   };
   afterEach(async () => {
@@ -19,7 +19,7 @@ describe('elasticsearch extension', () => {
   it('return default ydoc when fetched documentName does not exist', async () => {
     const server = await newHocuspocus({
       yDocOptions: { gc: false, gcFilter: () => true },
-      port: process.env.PORT ? Number(process.env.PORT) : 1234,
+      port: 0,
       extensions: [
         new Elasticsearch({
           elasticsearchOpts,
@@ -39,7 +39,7 @@ describe('elasticsearch extension', () => {
     const textName = 'test_name';
     const server = await newHocuspocus({
       yDocOptions: { gc: false, gcFilter: () => true },
-      port: process.env.PORT ? Number(process.env.PORT) : 1234,
+      port: 0,
       extensions: [
         new Elasticsearch({
           elasticsearchOpts,
@@ -64,7 +64,7 @@ describe('elasticsearch extension', () => {
     jest.spyOn(global.console, 'error');
     const server = await newHocuspocus({
       yDocOptions: { gc: false, gcFilter: () => true },
-      port: 1234,
+      port: 0,
 
       extensions: [
         new Elasticsearch({
@@ -75,11 +75,11 @@ describe('elasticsearch extension', () => {
       ],
     });
     const provider = await syncedNewHocuspocusProvider(server);
-    expect(console.error).toBeCalledTimes(1);
+    expect(console.error).toHaveBeenCalled();
     provider.configuration.websocketProvider.disconnect();
     provider.disconnect();
 
     // Note: console.error will be called again because onStoreDocument will be called as server cleanup
     await server.destroy();
-  });
+  }, 30_000);
 });

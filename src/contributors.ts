@@ -1,13 +1,13 @@
 import { Extension, Document, onDisconnectPayload } from '@hocuspocus/server';
-import { getVersion, equalSnapshots } from './snapshot';
-import elasticsearch from '@elastic/elasticsearch';
+import { getVersion, equalSnapshots } from './snapshot.js';
+import { Client, type ClientOptions } from '@elastic/elasticsearch';
 import 'dotenv/config';
 
 import * as Y from 'yjs';
-const elasticsearchOpts: elasticsearch.ClientOptions = {
+const elasticsearchOpts: ClientOptions = {
   node: process.env.ELASTICSEARCH_URL,
 };
-const db = new elasticsearch.Client(elasticsearchOpts);
+const db = new Client(elasticsearchOpts);
 
 export class Contributors implements Extension {
   // make sure this extension runs before Snapshot
@@ -95,33 +95,30 @@ export const updateContributors = async (data: onDisconnectPayload) => {
     console.log('contributors: ', contributors);
     await db?.update({
       index: 'articles',
-      type: 'doc',
       id: data.documentName,
-      body: {
-        script: {
-          source: `
-            if (ctx._source.contributors == null) {
-            ctx._source.contributors = [];
-            }
-            
-            def existingContributors = [:];
-            for (def contributor : ctx._source.contributors) {
-                existingContributors[contributor.userId] = contributor;
-            }
-            
-            for (def contributor : params.contributors) {
-                existingContributors[contributor.userId] = contributor;
-            }
-            
-            ctx._source.contributors = existingContributors.values();
-          `,
-          params: {
-            contributors,
-          },
-          lang: 'painless',
+      script: {
+        source: `
+          if (ctx._source.contributors == null) {
+          ctx._source.contributors = [];
+          }
+          
+          def existingContributors = [:];
+          for (def contributor : ctx._source.contributors) {
+              existingContributors[contributor.userId] = contributor;
+          }
+          
+          for (def contributor : params.contributors) {
+              existingContributors[contributor.userId] = contributor;
+          }
+          
+          ctx._source.contributors = existingContributors.values();
+        `,
+        params: {
+          contributors,
         },
-        refresh: true,
+        lang: 'painless',
       },
+      refresh: true,
     });
   } catch (e) {
     console.error(e);

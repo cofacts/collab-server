@@ -2,7 +2,7 @@
 
 # Stage1: Build collab-server
 #
-FROM node:18-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /srv/www
 
 # make node_modules cached.
@@ -22,7 +22,7 @@ RUN npm prune --production
 
 # Stage2: Create runner, copy stage1 outputs and other dependencies
 #
-FROM node:18-alpine
+FROM node:24-alpine
 
 WORKDIR /srv/www
 EXPOSE 5001

@@ -4,14 +4,14 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@hocuspocus/provider": "^2.7.1",
-    "@hocuspocus/server": "^2.7.1",
-    "@hocuspocus/transformer": "^2.7.1",
+    "@hocuspocus/provider": "^3.4.4",
+    "@hocuspocus/server": "^3.4.4",
+    "@hocuspocus/transformer": "^3.4.4",
     "node-fetch": "^3.2.3",
     "redis": "^4.0.4",
     "sinon": "^12.0.1",
     "ws": "^8.5.0",
-    "yjs": "^13.6.4"
+    "yjs": "^13.6.30"
   },
   "devDependencies": {
     "@types/redis": "^4.0.11",
